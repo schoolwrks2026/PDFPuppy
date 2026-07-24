@@ -1,0 +1,14 @@
+# .gitignore
+## .NET Core / C# Build Artifacts
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstate
+
+## IDE Cache / Config
+.vs/
+.idea/
+*.swp
+*.log

@@ -1,0 +1,99 @@
+<UserControl x:Class="PdfUtility.App.Views.SplitView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Title -->
+            <RowDefinition Height="Auto"/>
+            <!-- Drag & Drop PDF Dropzone -->
+            <RowDefinition Height="*"/>
+            <!-- Configuration Settings Card -->
+            <RowDefinition Height="Auto"/>
+            <!-- Actions/Progress -->
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="✂️ Split PDF Document" Style="{StaticResource HeaderTitleStyle}"/>
+            <TextBlock Text="Extract all individual pages as single-page documents, or cut a custom page subset range offline." Style="{StaticResource SubtitleStyle}"/>
+        </StackPanel>
+
+        <!-- Dropzone card -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="2" CornerRadius="10" Margin="0,0,0,16" Padding="24"
+                AllowDrop="True" Drop="Border_Drop" DragOver="Border_DragOver">
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="✂️" FontSize="56" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <TextBlock Text="Drag and drop your PDF here" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="{StaticResource TextBrush}"/>
+                    <TextBlock Text="or click below to browse a file from your computer" FontSize="13" Foreground="{StaticResource MutedTextBrush}" HorizontalAlignment="Center" Margin="0,4,0,16"/>
+                    <Button Content="Browse PDF File" Click="BrowseFile_Click" Style="{StaticResource ModernSecondaryButtonStyle}" HorizontalAlignment="Center"/>
+
+                    <!-- Selected File State -->
+                    <Border Margin="0,16,0,0" Padding="12,8" Background="{StaticResource BackgroundBrush}" CornerRadius="6" Visibility="{Binding HasSelectedFile, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📄" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedFileName}" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" MaxWidth="300" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Configuration Settings Card -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+            <StackPanel>
+                <!-- Split options -->
+                <TextBlock Text="⚙️ Splitting Configuration" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,12"/>
+
+                <RadioButton Content="Extract every page as an individual single-page PDF (e.g., Page_1.pdf, Page_2.pdf...)"
+                             IsChecked="{Binding SplitAllPages, Mode=TwoWay}"
+                             Foreground="{StaticResource TextBrush}" Margin="0,0,0,10"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <RadioButton Content="Extract a specific subset range of pages: "
+                                 IsChecked="{Binding IsRangeSelectionEnabled, Mode=OneWay}"
+                                 Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBox Width="150" Text="{Binding PageRange, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding IsRangeSelectionEnabled}"
+                             Style="{StaticResource ModernTextBoxStyle}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                    <TextBlock Text=" (e.g., 1-3, 5)" FontSize="12" Foreground="{StaticResource MutedTextBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <!-- Output Folder row -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Save pages to: " FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBox Grid.Column="1" Text="{Binding OutputDirectory, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" VerticalAlignment="Center"/>
+                    <Button Grid.Column="2" Content="Browse Folder" Style="{StaticResource ModernSecondaryButtonStyle}" VerticalAlignment="Center" Margin="8,0,0,0" Click="BrowseFolder_Click"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Actions -->
+        <Border Grid.Row="3" Background="Transparent">
+            <StackPanel>
+                <ProgressBar Height="10" Minimum="0" Maximum="100" Value="{Binding ProgressValue}" Visibility="{Binding IsSplitting, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="{StaticResource AccentBrush}" Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="Split PDF" Command="{Binding SplitCommand}" Style="{StaticResource ModernButtonStyle}" Width="160" Margin="0,0,8,0"/>
+                        <Button Content="Cancel" Command="{Binding CancelCommand}" Style="{StaticResource ModernSecondaryButtonStyle}" Width="100" Visibility="{Binding IsSplitting, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding SplitStatus}" FontSize="13" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="16,0" TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

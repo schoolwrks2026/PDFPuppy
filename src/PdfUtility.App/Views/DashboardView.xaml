@@ -1,0 +1,97 @@
+<UserControl x:Class="PdfUtility.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Header Title Row -->
+            <RowDefinition Height="Auto"/>
+            <!-- Quick Actions Row -->
+            <RowDefinition Height="Auto"/>
+            <!-- Recent Activity Title Row -->
+            <RowDefinition Height="Auto"/>
+            <!-- Recent Activity List Row -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Welcome Headers -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,24">
+            <TextBlock Text="Welcome back, User" Style="{StaticResource HeaderTitleStyle}"/>
+            <TextBlock Text="Convert documents or merge PDFs instantly, 100% offline." Style="{StaticResource SubtitleStyle}"/>
+        </StackPanel>
+
+        <!-- Quick Access Card Options -->
+        <Grid Grid.Row="1" Margin="0,0,0,28">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Convert to PDF quick action card -->
+            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="🔄 Convert to PDF" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="1" Text="Supports DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, CSV, RTF and Image files." FontSize="13" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" Height="50" Margin="0,0,0,16"/>
+                    <Button Grid.Row="2" Content="Start Conversion" Command="{Binding QuickConvertCommand}" Style="{StaticResource ModernButtonStyle}" HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+
+            <!-- Merge PDFs quick action card -->
+            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="🥞 Merge PDFs" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="1" Text="Combine multiple PDFs in sequence, reorder easily, and save to a single document." FontSize="13" Foreground="{StaticResource MutedTextBrush}" TextWrapping="Wrap" Height="50" Margin="0,0,0,16"/>
+                    <Button Grid.Row="2" Content="Start Merging" Command="{Binding QuickMergeCommand}" Style="{StaticResource ModernButtonStyle}" HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Recent Activity Section -->
+        <TextBlock Grid.Row="2" Text="📜 Recent Processing History" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,12"/>
+
+        <Border Grid.Row="3" Style="{StaticResource CardStyle}" Padding="0">
+            <Grid>
+                <!-- Display message if history list is empty -->
+                <TextBlock Text="No recent files processed yet. Get started by converting or merging!"
+                           Foreground="{StaticResource MutedTextBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20"
+                           Visibility="{Binding RecentHistory.Count, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverted}"/>
+
+                <!-- Recent History list grid -->
+                <ListView ItemsSource="{Binding RecentHistory}" BorderThickness="0" Background="Transparent" AlternationCount="2">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="16,10"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Action" DisplayMemberBinding="{Binding ActionType}" Width="100"/>
+                            <GridViewColumn Header="Files" DisplayMemberBinding="{Binding SourceFiles}" Width="250"/>
+                            <GridViewColumn Header="Timestamp" DisplayMemberBinding="{Binding CreatedAt, StringFormat={}{0:g}}" Width="140"/>
+                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
